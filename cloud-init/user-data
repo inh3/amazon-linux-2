@@ -1,0 +1,31 @@
+#cloud-config
+
+groups:
+  - amazon: [ivanhall]
+
+users:
+  # ec2-user
+  - default
+  # ivanhall
+  - name: ivanhall
+    gecos: Ivan Hall
+    # provide sudo access
+    groups: sudo
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    # only allow ssh key-based access
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ssh-rsa <rsa_public_key>
+
+chpasswd:
+  list: |
+    ec2-user:<default_user_password>
+
+# NOTE: cloud-init applies network settings on every boot by default.
+# To retain network settings from first boot, add following ‘write_files’ section:
+write_files:
+  - path: /etc/cloud/cloud.cfg.d/80_disable_network_after_firstboot.cfg
+    content: |
+      # Disable network configuration after first boot
+      network:
+       config: disabled
